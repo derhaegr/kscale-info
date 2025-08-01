@@ -1,0 +1,67 @@
+Training kscale labs K-Bot:
+
+First install ubuntu desktop perferably with a Nvidea GPU in the system.
+
+Step 1: Prepare Your System and Dependencies
+First, you'll need to install essential tools on your fresh Ubuntu machine. This includes Git for cloning the repositories and Python 3.11 or higher, which is the recommended version for the project.
+# Update package lists
+sudo apt update
+sudo apt upgrade -y
+
+# Install Git and Python 3.11 (or a higher version)
+sudo apt install git python3.11 python3.11-venv -y
+
+# Install Git LFS (Large File Storage), which is necessary for large assets
+sudo apt install git-lfs -y
+
+Step 2: MuJoCo License and Setup
+K-Scale Labs' software relies on the MuJoCo physics engine. While MuJoCo is now free, you still need to download the library and get a license key.
+ * Download MuJoCo: Go to the official MuJoCo website and download the mujoco library for your operating system.
+ * Get a License Key: You can also get a free license key (.mjkey file) from the same website.
+ * Configure MuJoCo: Extract the downloaded .zip file into a directory like ~/.mujoco/mujoco2.3.7. Place the .mjkey file in this same directory.
+ * Set Environment Variables: Open your ~/.bashrc or ~/.zshrc file and add the following lines. This tells your system where to find the MuJoCo binaries and your license key.
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.mujoco/mujoco2.3.7/bin
+export MUJOCO_KEY_PATH=~/.mujoco/.mjkey
+
+   After saving the file, run source ~/.bashrc (or source ~/.zshrc) to apply the changes.
+Step 3: Python Virtual Environment and JAX
+Creating a Python virtual environment is crucial to avoid conflicts with your system's Python packages. The K-Bot project uses JAX, which should be installed with GPU support for the best performance.
+# Create a virtual environment
+python3.11 -m venv kbot_env
+source kbot_env/bin/activate
+
+# Upgrade pip
+pip install --upgrade pip
+
+# Install JAX with GPU support (recommended)
+# For an NVIDIA GPU:
+pip install 'jax[cuda12_pip]' # Replace with your CUDA version if needed
+# For a CPU-only machine:
+pip install 'jax[cpu]'
+
+Step 4: Clone and Install ksim-gym and ksim-kbot
+The ksim-kbot repository uses ksim-gym as a submodule. You need to clone the main repository and then initialize its submodule to get all the necessary code.
+# Clone the ksim-kbot repository
+git clone https://github.com/kscalelabs/ksim-kbot.git
+cd ksim-kbot
+
+# Initialize and update the git submodule (this is essential!)
+git submodule update --init --recursive
+
+# Install ksim-kbot with all its dependencies
+# The -e flag installs the package in "editable" mode, which is great for development.
+pip install -e .
+
+Step 5: Train and Visualize a Model
+With everything set up, you can now start training your own policy or visualizing a pre-trained one. The repository includes example scripts to get you started.
+Training:
+# This command starts the training process. The duration depends on your GPU.
+python -m ksim_kbot.train
+
+Visualizing:
+You can visualize a pre-trained checkpoint to see the K-Bot in action without having to train a model from scratch.
+# Visualize a pre-trained model checkpoint.
+# This command will open a graphical MuJoCo viewer.
+python -m ksim_kbot.train run_mode=view load_from_ckpt_path=assets/ckpt.bin
+
+Following these steps should give you a fully functional environment to begin working with the K-Bot's reinforcement learning codebase.
