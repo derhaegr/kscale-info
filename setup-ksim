@@ -1,0 +1,47 @@
+# Getting started with Kscale labs Ksim
+# Tested on Ubuntu 24.04.3 LTS using WSL
+
+# Step 1: Prepare Your System and Dependencies
+sudo apt-get update && sudo apt-get upgrade -y
+sudo apt install python3-pip
+sudo apt install python3.12-venv
+
+# Step 2: Python Virtual Environment and JAX Installation
+# Using a Python virtual environment is a best practice to manage project dependencies and avoid conflicts.
+# Create and Activate Virtual Environment:
+python3 -m venv kbot_env
+source kbot_env/bin/activate
+
+# You should now see (kbot_env) at the beginning of your shell prompt.
+
+# 3. Install JAX with GPU Support: For optimal performance, install JAX with support for your NVIDIA GPU's CUDA version.
+      * For NVIDIA GPU (recommended):
+# First, check your CUDA version by running nvidia-smi.
+# Then, install the appropriate JAX wheel.
+pip install jax[cuda]
+      * For CPU-only:
+pip install -U "jax[cpu]"
+
+# 4. Verify JAX Installation: Check that JAX can detect your GPU.
+python3 -c "from jax.lib import xla_bridge; print(xla_bridge.get_backend().platform)"
+
+# This command should output gpu if JAX is correctly configured with your GPU.
+
+# Step 5: Clone and Install ksim
+# The ksim repository includes kscale-assets as a submodule. You need to clone the main repository and then initialize its submodule to get all the necessary code.
+            # 1. Clone the Repository:
+git clone  https://github.com/kscalelabs/ksim
+cd ksim
+            # 2. Initialize Submodules: This is a crucial step to download the kscale-assets dependency.
+            # to avoid login we rename the url.
+git config --local submodule."ksim_kbot/kscale-assets".url https://github.com/kscalelabs/kscale-assets.git
+git submodule update --init --recursive
+
+# 6. Install the Package: The -e flag installs the package in "editable" mode, which is useful for development.
+pip install -e .
+
+# 7. Set the MuJoCo variable to use the EGL-backend
+export MUJOCO_GL=egl
+
+# Finally we can run the training example:
+python3 -m examples.walking
