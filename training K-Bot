@@ -37,12 +37,13 @@ cd ksim
 git config --local submodule."ksim_kbot/kscale-assets".url https://github.com/kscalelabs/kscale-assets.git
 git submodule update --init --recursive
 
-# 6. lets use kbot for training
+# 6. lets install the requirements for kbot training
 cd examples/kbot
-pip install -r /path/to/requirements.txt
+pip install -r examples/kbot/requirements.txt
 
 # 7. Install the Package: The -e flag installs the package in "editable" mode, which is useful for development.
 pip install -e .
+cd examples/kbot
 
 # 8. Set the MuJoCo variable to use the EGL-backend
 export MUJOCO_GL=egl
